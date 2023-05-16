@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    container_name: fts-semantic-search-db-container
+    ports:
+      - '5671:5432'
+    environment:
+      POSTGRES_USER: fts-semantic-search
+      POSTGRES_PASSWORD: fts-semantic-search
+      POSTGRES_DB: fts-semantic-search
