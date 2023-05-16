@@ -3,12 +3,13 @@
 
 generator client {
     provider = "prisma-client-js"
-    previewFeatures = ["jsonProtocol"]
+    previewFeatures = ["jsonProtocol", "postgresqlExtensions", "fullTextSearch"]
 }
 
 datasource db {
     provider = "sqlite"
     url      = env("DATABASE_URL")
+    extensions = [pgvector(map: "vector", schema: "extensions")]  // Add the pgvector extension
 }
 
 model Example {
