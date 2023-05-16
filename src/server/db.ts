@@ -15,7 +15,7 @@ db.connect().then(() => {
   console.log('Connected to database');
   db.query(`
   
-  CREATE TABLE articles (
+  CREATE TABLE articles IF NOT EXISTS (
     id SERIAL PRIMARY KEY,
     title TEXT,
     tags TEXT[],  -- an array of tags
