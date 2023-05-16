@@ -4,7 +4,11 @@ import pg from 'pg';
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 const db: pg.Client = new pg.Client({
-  connectionString: process.env.DATABASE_URL as string,
+  user: 'postgres',
+  host: 'localhost',
+  database: 'ftssemanticsearch',
+  password: 'postgres',
+  port: 5432,
 });
 
 db.connect().then(() => {
