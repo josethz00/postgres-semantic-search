@@ -12,8 +12,12 @@ datasource db {
     extensions = [pgvector(map: "vector", schema: "extensions")]  // Add the pgvector extension
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Article {
+  id    Int      @id @default(autoincrement())
+  title String
+  tags  String[]
+  content String
+  vector Unsupported("vector")?
+  tsvector_title String
+  tsvector_tags String
 }

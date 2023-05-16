@@ -16,7 +16,7 @@
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
-import { prisma } from "~/server/db";
+import { db } from "~/server/db";
 
 type CreateContextOptions = Record<string, never>;
 
@@ -32,7 +32,8 @@ type CreateContextOptions = Record<string, never>;
  */
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
   return {
-    prisma,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    db,
   };
 };
 
