@@ -46,7 +46,7 @@ export const exampleRouter = createTRPCRouter({
         ORDER BY (title_rank + tags_rank) DESC, distance ASC
         LIMIT 10;
         `,
-        [input.title, pgvector.toSql(embeddings.data.data[0]?.embedding)]
+        [input.title.replace(/\s+/g, ' & '), pgvector.toSql(embeddings.data.data[0]?.embedding)]
     );
 
     } catch (error) {
