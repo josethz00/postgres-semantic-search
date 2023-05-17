@@ -29,8 +29,6 @@ export const exampleRouter = createTRPCRouter({
         input: input.title,
       });
       
-      console.log(embeddings.data.data[0]?.embedding);
-      
       return ctx.db.query(
         `
         SELECT *
