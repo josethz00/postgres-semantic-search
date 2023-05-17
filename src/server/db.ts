@@ -11,9 +11,9 @@ const db: pg.Client = new pg.Client({
   port: 5432,
 });
 
-db.connect().then(() => {
+db.connect().then(async () => {
   console.log('Connected to database');
-  db.query(`
+  await db.query(`
   
   CREATE TABLE IF NOT EXISTS articles (
     id SERIAL PRIMARY KEY,
