@@ -6,7 +6,7 @@ import { useState } from "react";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const search = api.example.getAll.useMutation();
   const [searchText, setSearchText] = useState("");
 
   return (
@@ -47,8 +47,10 @@ const Home: NextPage = () => {
               <button
                 className="text-white px-4 py-2 mr-1 bg-[#065fd4] hover:bg-[#0a5ebe] rounded-md"
                 onClick={() => {
-                  // Handle search functionality here
                   console.log("Perform search:", searchText);
+                  console.log(search.mutate({
+                    title: searchText,
+                  }));
                 }}
               >
                 Search
