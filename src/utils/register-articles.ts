@@ -1,6 +1,33 @@
 import { Configuration, OpenAIApi } from "openai";
-import pgvector from 'node_modules/pgvector/src/pg';
-import { db } from "~/server/db";
+import * as pg from 'pg'
+
+const db: pg.Client = new pg.Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'ftssemanticsearch',
+    password: 'postgres',
+    port: 5432,
+  });
+  
+db.connect().then(async () => {
+  console.log('Connected to database');
+  await db.query(`
+   
+  CREATE TABLE IF NOT EXISTS articles (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    tags TEXT[],  -- an array of tags
+    content TEXT,
+    vector VECTOR(1536),
+    tsvector_title TSVECTOR,  -- tsvector representation of title for full-text search
+    tsvector_tags TSVECTOR,   -- tsvector representation of tags for full-text search
+    url VARCHAR(255) UNIQUE
+  );
+  
+`);
+}).catch((err) => {
+  console.log('Error connecting to database', err);
+});
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 const articles = [
@@ -192,12 +219,13 @@ const seed = async () => {
 
     try {
         for (let i = 0; i < articles.length; i++) {
+            console.log(articles[i])
             const article = articles[i];
             const embeddings = await openai.createEmbedding({
                 model: 'text-embedding-ada-002',
                 input: article.title,
             });
-            article.vector = pgvector.toSql(embeddings.data.data[0]?.embedding);
+            article.vector = JSON.stringify(embeddings.data.data[0]?.embedding) as any;
         }
     } catch (error) {
         console.log(error);
@@ -209,7 +237,7 @@ const seed = async () => {
             await db.query(
                 `
                 INSERT INTO articles (url, title, tags, content, vector, tsvector_title, tsvector_tags)
-                VALUES ($1, $2, $3, $4, $5, to_tsvector('english', $2), to_tsvector('english', $3));
+                VALUES ($1, $2, ARRAY[$3], $4, $5, to_tsvector('english', $2), to_tsvector('english', $3));
                 `,
                 [article.url, article.title, article.tags, article.content, article.vector]
             );

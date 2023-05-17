@@ -37,8 +37,28 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var openai_1 = require("openai");
-var pg_1 = require("node_modules/pgvector/src/pg");
-var db_1 = require("~/server/db");
+var pg = require("pg");
+var db = new pg.Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'ftssemanticsearch',
+    password: 'postgres',
+    port: 5432,
+});
+db.connect().then(function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                console.log('Connected to database');
+                return [4 /*yield*/, db.query("\n   \n  CREATE TABLE IF NOT EXISTS articles (\n    id SERIAL PRIMARY KEY,\n    title TEXT,\n    tags TEXT[],  -- an array of tags\n    content TEXT,\n    vector VECTOR(1536),\n    tsvector_title TSVECTOR,  -- tsvector representation of title for full-text search\n    tsvector_tags TSVECTOR,   -- tsvector representation of tags for full-text search\n    url VARCHAR(255) UNIQUE\n  );\n  \n")];
+            case 1:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); }).catch(function (err) {
+    console.log('Error connecting to database', err);
+});
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 var articles = [
     {
@@ -212,6 +232,7 @@ var seed = function () { return __awaiter(void 0, void 0, void 0, function () {
                 _b.label = 2;
             case 2:
                 if (!(i < articles.length)) return [3 /*break*/, 5];
+                console.log(articles[i]);
                 article = articles[i];
                 return [4 /*yield*/, openai.createEmbedding({
                         model: 'text-embedding-ada-002',
@@ -219,7 +240,7 @@ var seed = function () { return __awaiter(void 0, void 0, void 0, function () {
                     })];
             case 3:
                 embeddings = _b.sent();
-                article.vector = pg_1.default.toSql((_a = embeddings.data.data[0]) === null || _a === void 0 ? void 0 : _a.embedding);
+                article.vector = JSON.stringify((_a = embeddings.data.data[0]) === null || _a === void 0 ? void 0 : _a.embedding);
                 _b.label = 4;
             case 4:
                 i++;
@@ -236,7 +257,7 @@ var seed = function () { return __awaiter(void 0, void 0, void 0, function () {
             case 8:
                 if (!(_i < articles_1.length)) return [3 /*break*/, 11];
                 article = articles_1[_i];
-                return [4 /*yield*/, db_1.db.query("\n                INSERT INTO articles (url, title, tags, content, vector, tsvector_title, tsvector_tags)\n                VALUES ($1, $2, $3, $4, $5, to_tsvector('english', $2), to_tsvector('english', $3));\n                ", [article.url, article.title, article.tags, article.content, article.vector])];
+                return [4 /*yield*/, db.query("\n                INSERT INTO articles (url, title, tags, content, vector, tsvector_title, tsvector_tags)\n                VALUES ($1, $2, ARRAY[$3], $4, $5, to_tsvector('english', $2), to_tsvector('english', $3));\n                ", [article.url, article.title, article.tags, article.content, article.vector])];
             case 9:
                 _b.sent();
                 _b.label = 10;
