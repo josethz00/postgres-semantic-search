@@ -34,17 +34,13 @@ export const exampleRouter = createTRPCRouter({
         SELECT *
         FROM (
             SELECT id, title,
-                ts_rank(tsvector_title, to_tsquery('english', $1)) AS title_rank,
-                ts_rank(tsvector_tags, to_tsquery('english', $1)) AS tags_rank,
-                vector <=> CAST($2 AS VECTOR(1536)) AS distance
+                vector <=> CAST($1 AS VECTOR(1536)) AS distance
             FROM articles
-            WHERE tsvector_title @@ to_tsquery('english', $1)
-            OR tsvector_tags @@ to_tsquery('english', $1)
         ) sub
-        ORDER BY (title_rank + tags_rank) DESC, distance ASC
+        ORDER BY distance ASC
         LIMIT 10;
         `,
-        [input.title.replace(/\s+/g, ' & '), pgvector.toSql(embeddings.data.data[0]?.embedding)]
+        [pgvector.toSql(embeddings.data.data[0]?.embedding)]
     );
 
     } catch (error) {
