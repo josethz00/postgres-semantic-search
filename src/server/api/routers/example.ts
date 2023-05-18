@@ -2,7 +2,6 @@ import { z } from "zod";
 import { Configuration, OpenAIApi } from "openai";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { env } from "~/env.mjs";
-import pgvector from 'node_modules/pgvector/src/pg';
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -16,7 +15,7 @@ export const exampleRouter = createTRPCRouter({
     z.object({
       title: z.string()
     })
-  ).mutation(async ({ ctx, input }) => {
+  ).query(async ({ ctx, input }) => {
     const configuration = new Configuration({
       apiKey: env.OPENAI_API_KEY,
     });
@@ -33,14 +32,14 @@ export const exampleRouter = createTRPCRouter({
         `
         SELECT *
         FROM (
-            SELECT id, title,
-                vector <=> CAST($1 AS VECTOR(1536)) AS distance
+            SELECT id, title, content, url,
+                content_vector <=> CAST($1 AS VECTOR(1536)) AS distance_content
             FROM articles
         ) sub
-        ORDER BY distance ASC
+        ORDER BY distance_content ASC
         LIMIT 10;
         `,
-        [pgvector.toSql(embeddings.data.data[0]?.embedding)]
+        [JSON.stringify(embeddings.data.data[0]?.embedding)]
     );
 
     } catch (error) {
