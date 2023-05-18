@@ -59,19 +59,32 @@ const Home: NextPage = () => {
           </div>
           {/* Add the search results */}
           <div className="flex flex-col gap-2 mt-4 max-w-lg w-full">
-            {search.data?.rows.map((result) => (
-              <Link
-                key={result.id}
-                href={result.url as string}
-                className="hover:bg-white/10 mb-3 border border-white/10 rounded-md bg-white/5 py-2"
-              >
-                <p className="text-white ml-3 text-xl">{result.title}</p>
-                <div className="flex items-center gap-2 px-4 py-2 rounded-md">
-                  <span className="text-white/50">{result.content}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+  {search.data?.rows.map((result) => (
+    <Link
+      key={result.id}
+      href={result.url as string}
+      className="hover:bg-white/10 mb-3 border border-white/10 rounded-md bg-white/5 py-2"
+    >
+      <p className="text-white ml-3 text-xl">{result.title}</p>
+      
+      {/* Display tags in a blogpost style */}
+      <div className="flex flex-wrap ml-3">
+  
+      </div>
+
+      {/* Visual representation of distance_content */}
+      <div className="my-3 mx-3 h-2 bg-gray-200 rounded-full">
+        <div className="h-full text-center text-xs text-white bg-green-500 rounded-full" style={{width: `${result.distance_content * 100}%`}}></div>
+      </div>
+
+      <p className="text-white ml-3 text-sm">{result.distance_content}</p>
+      <div className="flex items-center gap-2 px-4 py-2 rounded-md">
+        <span className="text-white/50">{result.content}</span>
+      </div>
+    </Link>
+  ))}
+</div>
+
         </div>
 
       </main>

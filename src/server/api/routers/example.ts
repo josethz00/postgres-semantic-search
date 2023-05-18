@@ -32,7 +32,7 @@ export const exampleRouter = createTRPCRouter({
         `
         SELECT *
         FROM (
-            SELECT id, title, content, url,
+            SELECT id, title, content, url, tags,
                 content_vector <=> CAST($1 AS VECTOR(1536)) AS distance_content
             FROM articles
         ) sub
