@@ -6,14 +6,17 @@ import { useState } from "react";
 import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
-  const search = api.example.getAll.useMutation();
   const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState<Record<string, unknown>[]>([]);
+  const search = api.example.getAll.useQuery({
+    title: searchText,
+  });
 
   return (
     <>
       {/* Rest of the code... */}
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+      <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 mt-24">
           {/* Add the search bar */}
           <div className="max-w-lg w-full bg-white/20 rounded-md overflow-hidden">
             <div className="flex items-center h-12">
@@ -48,18 +51,29 @@ const Home: NextPage = () => {
                 className="text-white px-4 py-2 mr-1 bg-[#065fd4] hover:bg-[#0a5ebe] rounded-md"
                 onClick={() => {
                   console.log("Perform search:", searchText);
-                  console.log(search.mutate({
-                    title: searchText,
-                  }));
                 }}
               >
                 Search
               </button>
             </div>
           </div>
-
-          {/* Rest of the code... */}
+          {/* Add the search results */}
+          <div className="flex flex-col gap-2 mt-4 max-w-lg w-full">
+            {search.data?.rows.map((result) => (
+              <Link
+                key={result.id}
+                href={result.url as string}
+                className="hover:bg-white/10 mb-3 border border-white/10 rounded-md bg-white/5 py-2"
+              >
+                <p className="text-white ml-3 text-xl">{result.title}</p>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-md">
+                  <span className="text-white/50">{result.content}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
+
       </main>
     </>
   );
