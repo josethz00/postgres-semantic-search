@@ -74,10 +74,10 @@ const Home: NextPage = () => {
 
       {/* Visual representation of distance_content */}
       <div className="my-3 mx-3 h-2 bg-gray-200 rounded-full">
-        <div className="h-full text-center text-xs text-white bg-green-500 rounded-full" style={{width: `${result.distance_content * 100}%`}}></div>
+        <div className="h-full text-center text-xs text-white bg-green-500 rounded-full" style={{width: `${(1 - result.distance_content) * 100}%`}}></div>
       </div>
 
-      <p className="text-white ml-3 text-sm">{result.distance_content}</p>
+      <p className="text-white ml-3 text-sm">{((1 - result.distance_content) * 100).toFixed(2)}% match</p>
       <div className="flex items-center gap-2 px-4 py-2 rounded-md">
         <span className="text-white/50">{result.content}</span>
       </div>
